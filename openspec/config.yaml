@@ -1,0 +1,21 @@
+schema: spec-driven
+
+context: |
+  XBank is a microservice banking project.
+  Global rules: https://github.com/feridhub8/sdd-global-rules-java (local clone ~/Desktop/sdd-global-rules-java) (read first; ask on any conflict with these specs).
+
+  Repositories:
+  - All repos live side by side in the local XBank/ folder; each is a separate GitHub repo under feridhub8.
+  - xbank-specs (this repo) holds OpenSpec for every XBank repo. Code repos hold code only.
+  - Microservices: xbank-ms-<name> (lowercase kebab-case). Gateway: xbank-api-gateway. Infrastructure: xbank-infrastructure.
+
+  Stack:
+  - Java 25 (LTS), Spring Boot 4.x.
+  - Gradle, Groovy DSL, always via ./gradlew.
+  - MapStruct for mapping, Lombok. DTOs are regular classes with Lombok, not records.
+  - Base package: com.xbank.<service> (for example com.xbank.account).
+  - Flow: Controller -> Service -> Repository.
+
+  Not decided yet (ask before assuming): package layout inside a service, database engine and
+  per-service split, dev/prod database servers, API gateway technology, inter-service
+  communication and message broker, infrastructure tools.

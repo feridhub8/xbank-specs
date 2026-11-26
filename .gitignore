@@ -1,0 +1,26 @@
+# OS
+.DS_Store
+.AppleDouble
+._*
+Thumbs.db
+desktop.ini
+
+# IDE / editors
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# Secrets / local config
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Tool output
+graphify-out/
+
+# Claude Code local settings
+.claude/settings.local.json
