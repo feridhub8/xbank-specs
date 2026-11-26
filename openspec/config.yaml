@@ -16,6 +16,21 @@ context: |
   - Base package: com.xbank.<service> (for example com.xbank.account).
   - Flow: Controller -> Service -> Repository.
 
+  Environments:
+  - local (developer machine) and dev (Docker) use the dev resources; prod uses the prod resources.
+  - Keycloak: one instance, realm xbankDev for local and dev, realm xbank for prod.
+    Roles USER (default on registration) and ADMIN (granted by hand in Keycloak).
+  - Dev resources end with "Dev"; prod names have no suffix.
+
+  Secrets:
+  - HashiCorp Vault (persistent file storage), KV v2 at secret/.
+  - Path: secret/xbank/<env>/<service>, env = local | dev | prod, service = repo name without "xbank-" (for example secret/xbank/local/ms-auth).
+  - No secret values in any repo; only .env.example with placeholders.
+
+  Infrastructure (repo xbank-infrastructure, Docker only):
+  - PostgreSQL, Keycloak, Vault. One folder per tool, root docker-compose.yml includes all.
+  - Compose project name xbank; shared external network xbank_network.
+
   Not decided yet (ask before assuming): package layout inside a service, database engine and
-  per-service split, dev/prod database servers, API gateway technology, inter-service
-  communication and message broker, infrastructure tools.
+  per-service split for XBank services, API gateway technology, inter-service communication
+  and message broker.
