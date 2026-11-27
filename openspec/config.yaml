@@ -13,8 +13,28 @@ context: |
   - Java 25 (LTS), Spring Boot 4.x.
   - Gradle, Groovy DSL, always via ./gradlew.
   - MapStruct for mapping, Lombok. DTOs are regular classes with Lombok, not records.
-  - Base package: com.xbank.<service> (for example com.xbank.account).
   - Flow: Controller -> Service -> Repository.
+  - Application texts (errors, logs, API) are in English.
+
+  Package layout (every service):
+  - Base package com.xbank.ms.<service> (for example com.xbank.ms.auth).
+  - Main class <Service>Application directly in the base package (com.xbank.ms.auth.AuthApplication).
+  - common/ holds cross-domain code: common/config/v1, common/exception/v1 (GlobalExceptionHandler).
+  - One folder per domain (for example auth/, account/, card/), each split by type with a version
+    folder: controller/v1, service/v1, dto/v1, client/v1, mapper/v1, repository/v1, exception/v1
+    (the domain's own exceptions). entity/ may have no version folder.
+  - Classes that call external APIs are clients and live in <domain>/client/v1 (or common/ when shared).
+
+  Errors:
+  - ProblemDetail (RFC 9457), application/problem+json, extra field code (UPPER_SNAKE_CASE),
+    and errors [{field, message}] for validation failures.
+
+  Ports:
+  - Host port: local 90xx, dev 91xx, prod 92xx, where xx is the service number.
+    api-gateway 00, ms-auth 01. Inside containers every service listens on 8080.
+
+  Testing:
+  - Unit tests plus Testcontainers integration tests, written with the feature; ./gradlew test runs both.
 
   Environments:
   - local (developer machine) and dev (Docker) use the dev resources; prod uses the prod resources.
@@ -25,12 +45,14 @@ context: |
   Secrets:
   - HashiCorp Vault (persistent file storage), KV v2 at secret/.
   - Path: secret/xbank/<env>/<service>, env = local | dev | prod, service = repo name without "xbank-" (for example secret/xbank/local/ms-auth).
-  - No secret values in any repo; only .env.example with placeholders.
+  - No secret values in any repo; only .env.example with empty values.
+  - Services read secrets with Spring Cloud Vault and sign in with their own AppRole per
+    environment (<service>-<env>, for example ms-auth-local) that can read only their own path.
+  - People sign in with userpass (admin user); the root token is revoked after setup.
 
   Infrastructure (repo xbank-infrastructure, Docker only):
   - PostgreSQL, Keycloak, Vault. One folder per tool, root docker-compose.yml includes all.
   - Compose project name xbank; shared external network xbank_network.
 
-  Not decided yet (ask before assuming): package layout inside a service, database engine and
-  per-service split for XBank services, API gateway technology, inter-service communication
-  and message broker.
+  Not decided yet (ask before assuming): database engine and per-service split for XBank
+  services, API gateway technology, inter-service communication and message broker.
